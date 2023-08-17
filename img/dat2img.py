@@ -18,7 +18,6 @@ def yuv_to_rgb(Y, U, V):
     B = clip(( 298 * (Y - 16) + 516 * (V - 128) + 128) >> 8)
     return R, G, B
 
-thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131357759_T.dat"
 rgb_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131359932_V.dat"
 output_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\test.jpg"
 
@@ -58,13 +57,11 @@ def uyvy_to_rgb(uyvy_data, width, height):
     rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
     return rgb_image
 
-# UYVYデータファイルのパス
-file_path = rgb_path
 # ビデオフレームの解像度
 width = 640
 height = 480
 
-with open(file_path, 'rb') as f:
+with open(rgb_path, 'rb') as f:
     uyvy_data = f.read()
 
 data = np.frombuffer(uyvy_data, dtype = np.uint8).reshape([height, width*2])
@@ -73,10 +70,13 @@ data = np.frombuffer(uyvy_data, dtype = np.uint8).reshape([height, width*2])
 # rgb_image = uyvy_to_rgb(uyvy_data, width, height)
 
 # 変換されたRGB画像を表示
-cv2.imshow('UYVY to RGB', data)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow('UYVY to RGB', data)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
+
+b_thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.dat"
+a_thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.dat"
 
 # 閾値で二値化
 def binalization(data, threshold):
@@ -87,19 +87,24 @@ def binalization(data, threshold):
 
 # 各画素16bit値、バイナリデータから画像を取得
 # np.frombeffer()はbufferをarrayとして解釈 https://deepage.net/features/numpy-frombuffer.html
-def thermal_image(path):
+def thermal_image(path, path2):
     with open(path, "rb") as f:
         img_binary = f.read()
     data = np.frombuffer(img_binary, dtype = np.uint16).reshape([512, 640])/10 - 273.15
-    # image = Image.fromarray(data.astype(np.uint8))
-    # image.show()
-    return data
+
+    with open(path2, "rb") as f:
+        img_binary2 = f.read()
+    data2 = np.frombuffer(img_binary2, dtype = np.uint16).reshape([512, 640])/10 - 273.15
+
+    img_diff = cv2.absdiff(data, data2)
+    _,img_th = cv2.threshold(img_diff,20,255,cv2.THRESH_BINARY)
+    image = Image.fromarray(img_th.astype(np.uint8))
+    image.show()
+    # return 
 
     
 
-# data = thermal_image(thermal_path)
-# # 二値化
-# img = binalization(data, 100)
+data = thermal_image(b_thermal_path, a_thermal_path)
 # image = Image.fromarray(img.astype(np.uint8))
 # image.show()
 

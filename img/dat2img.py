@@ -30,7 +30,6 @@ def thermal_image(path, path2):
     image.save(r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\img\result.png")
     # return 
 
-    
 
 data = thermal_image(b_thermal_path, a_thermal_path)
 # image = Image.fromarray(img.astype(np.uint8))

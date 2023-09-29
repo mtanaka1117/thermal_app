@@ -1,4 +1,5 @@
 # python C:\opencv_build\python_loader\setup.py install --user
+# 参考　https://qiita.com/konnitiha/items/bd8bc5823247fed8368c
 import numpy as np
 import math
 from PIL import Image

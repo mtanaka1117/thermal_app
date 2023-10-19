@@ -2,12 +2,6 @@ import cv2
 from PIL import Image
 import numpy as np
 
-def binalization(data, threshold):
-    img = data.copy()
-    img[data.astype(np.uint8) < threshold] = 0
-    img[data.astype(np.uint8) >= threshold] = 255
-    return img
-
 # 各画素16bit値、バイナリデータから画像を取得
 # np.frombeffer()はbufferをarrayとして解釈 https://deepage.net/features/numpy-frombuffer.html
 def thermal_image(path, path2):

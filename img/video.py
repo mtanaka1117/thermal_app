@@ -3,8 +3,9 @@ import cv2
 import numpy as np
 from more_itertools import peekable
 
-path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*_V.jpg'
-file_list = peekable(glob.iglob(path))
+# path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*_V.jpg'
+path = '/home/srv-admin/images/items1/1313/*_V.jpg'
+file_list = peekable(sorted(glob.iglob(path)))
 
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 video = cv2.VideoWriter('video_V.mp4',fourcc, 30.3, (640, 480))

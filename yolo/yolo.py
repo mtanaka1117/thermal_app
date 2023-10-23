@@ -13,14 +13,9 @@ model = YOLO("yolov8x.pt")
 
 for i in file_list:
   try:
-    # img_v_color = cv2.imread(i)
     results = model.predict(i, classes=[60, 67, 73, 76])
     video.write(results[0].plot())
-    # print(i)
-  except StopIteration:  #ここで例外処理
+  except StopIteration:
         break
 
 video.release()
-
-
-# results = model.predict()

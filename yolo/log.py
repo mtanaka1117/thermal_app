@@ -4,6 +4,7 @@ import numpy as np
 from more_itertools import peekable
 from ultralytics import YOLO
 from matplotlib import pyplot as plt
+import datetime
 
 b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
 a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
@@ -58,10 +59,13 @@ for x1, y1, x2, y2 in bbox:
 # for i in polygon:
 #     ax.add_patch(plt.Polygon(i,fill=False))
 
-for pt in points:
-    for poly, cls in zip(polygon, classes):
-        if cv2.pointPolygonTest(poly, pt, False) >= 0:
-            print(cls)
+with open("example.txt", "w") as f:
+    for pt in points:
+        for poly, cls in zip(polygon, classes):
+            if cv2.pointPolygonTest(poly, pt, False) >= 0:
+                # print(class_dic[cls])
+                f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
+
 
 #         ax.scatter(pt[:1], pt[1:], color=color)
 # ax.set_ylim(ax.get_ylim()[::-1])

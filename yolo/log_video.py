@@ -89,20 +89,21 @@ for i in file_list:
             bbox = pred[0].boxes.xyxy.cpu().numpy()
             classes = pred[0].boxes.cls.cpu().numpy()
 
-            
+
+
             # cv2.imshow("img", frame)
             # cv2.waitKey(1)
 
-            # polygon = []
-            # for x1, y1, x2, y2 in bbox:
-            #     polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
+            polygon = []
+            for x1, y1, x2, y2 in bbox:
+                polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
 
-            # with open("example.txt", "w") as f:
-            #     for pt in points:
-            #         for poly, cls in zip(polygon, classes):
-            #             if cv2.pointPolygonTest(poly, pt, False) >= 0:
-            #                 # print(class_dic[cls])
-            #                 f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
+            with open("example.txt", "a") as f:
+                for pt in points:
+                    for poly, cls in zip(polygon, classes):
+                        if cv2.pointPolygonTest(poly, pt, False) >= 0:
+                            # print(class_dic[cls])
+                            f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls] + "\n")
             
 
             if (feature_compare(b_img_v, img_v)<12):

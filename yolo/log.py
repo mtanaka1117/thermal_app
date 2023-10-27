@@ -6,10 +6,15 @@ from ultralytics import YOLO
 from matplotlib import pyplot as plt
 import datetime
 
-b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
-a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
+b_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.jpg'
+a_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg'
 
-visible_path = "/home/srv-admin/images/items1/1313/20230807_131358202_V.jpg"
+visible_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg'
+
+# b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
+# a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
+
+# visible_path = "/home/srv-admin/images/items1/1313/20230807_131358202_V.jpg"
 
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
@@ -29,6 +34,10 @@ img_binary = cv2.warpAffine(dilate, affine_matrix, (im_v.shape[1], im_v.shape[0]
 # retval, labels, _, centroids = cv2.connectedComponentsWithStats(img_binary)
 contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 contours = list(filter(lambda x: cv2.contourArea(x) > 100, contours))
+# cv2.drawContours(im_v, contours, -1, (0,0,255), 2)
+
+# cv2.imshow('img', im_v)
+# cv2.waitKey(0)
 
 points = []
 for i in contours:
@@ -36,8 +45,6 @@ for i in contours:
     cx = M["m10"] / M["m00"]
     cy = M["m01"] / M["m00"]
     points.append((cx, cy))
-
-# cv2.drawContours(im_v, contours, -1, (0,0,255), 2)
 
 
 model = YOLO("yolov8x.pt")

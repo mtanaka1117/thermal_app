@@ -6,6 +6,20 @@ from ultralytics import YOLO
 from matplotlib import pyplot as plt
 import datetime
 
+def feature_compare(img1, img2):
+    '''
+    画像の特徴量を比較する関数
+    '''
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING)
+    sift = cv2.ORB_create()
+    kp1, des1 = sift.detectAndCompute(img1, None)
+    kp2, des2 = sift.detectAndCompute(img2, None)
+
+    matches = bf.match(des1, des2)
+    dist = [m.distance for m in matches]
+    ret = sum(dist) / len(dist)
+    return ret
+
 # def get_center(img1, img2):
 #     points = []
 #     for i in contours:
@@ -18,7 +32,8 @@ import datetime
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
-path = '/home/srv-admin/images/items1/1313/*.jpg'
+# path = '/home/srv-admin/images/items1/1313/*.jpg'
+path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 
 # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -42,28 +57,41 @@ for i in file_list:
     try:
         if '_V' in i and '_T' in file_list.peek():
             img_v = cv2.imread(i, 0)
-            # # img_v_color = cv2.imread(i)
-
+            img_v_color = cv2.imread(i)
+            diff_v = cv2.absdiff(img_v, bg_v)
+            _, img_th_v = cv2.threshold(diff_v,30,255,cv2.THRESH_BINARY)
+            dilate_v = cv2.dilate(img_th_v,kernel,iterations=5)
+            erode_v = cv2.erode(dilate_v, kernel, 2)
 
             img_t = cv2.imread(next(file_list), 0)
             diff_t = cv2.absdiff(img_t, bg_t)
             affined_t = cv2.warpAffine(diff_t, affine_matrix, (img_v.shape[1], img_v.shape[0]))
-            _, img_th_t = cv2.threshold(affined_t,10,255,cv2.THRESH_BINARY)
-            dilate_t = cv2.dilate(img_th_t,kernel,2)
+            _, img_th_t = cv2.threshold(affined_t,12,255,cv2.THRESH_BINARY)
+            dilate_t = cv2.dilate(img_th_t,kernel,3)
+            erode_t = cv2.erode(dilate_t, kernel, 2)
 
-            cv2.imshow('img', dilate_t)
-            cv2.waitKey(1)
-
-            # contours, _ = cv2.findContours(dilate_t, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-            # contours = list(filter(lambda x: cv2.contourArea(x) > 100, contours))
-
-            # points = []
-            # for i in contours:
-            #     M = cv2.moments(i)
-            #     cx = M["m10"] / M["m00"]
-            #     cy = M["m01"] / M["m00"]
-            #     points.append((cx, cy))
-
+            touch_region = cv2.subtract(erode_t, erode_v)
+            contours, _ = cv2.findContours(touch_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            contours = list(filter(lambda x: cv2.contourArea(x) > 80, contours))
+            # cv2.drawContours(img_v_color, contours, -1, (0,0,255), 2)
+            # cv2.imshow('img', img_v_color)
+            # cv2.waitKey(1)
+            
+            points = []
+            for cnt in contours:
+                M = cv2.moments(cnt)
+                cx = M["m10"] / M["m00"]
+                cy = M["m01"] / M["m00"]
+                points.append((cx, cy))
+            
+            
+            
+            if (feature_compare(b_img_v, img_v)<12):
+                bg_v = img_v.copy()
+                # print('更新')
+            else: b_img_v = img_v.copy()
+            
+            
             # pred = model.predict(img_v, classes=[67, 73, 76])
             # frame = pred[0].plot()
             # bbox = pred[0].boxes.xyxy.cpu().numpy()

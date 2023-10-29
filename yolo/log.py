@@ -5,6 +5,7 @@ from more_itertools import peekable
 from ultralytics import YOLO
 from matplotlib import pyplot as plt
 import datetime
+from collections import deque, Counter
 
 b_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.jpg'
 a_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg'
@@ -66,12 +67,20 @@ for x1, y1, x2, y2 in bbox:
 # for i in polygon:
 #     ax.add_patch(plt.Polygon(i,fill=False))
 
+# detect_list = deque(maxlen=5)
+detect_dic = {}
+
+
 with open("example.txt", "w") as f:
     for pt in points:
         for poly, cls in zip(polygon, classes):
             if cv2.pointPolygonTest(poly, pt, False) >= 0:
                 # print(class_dic[cls])
-                f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
+                detect_dic.setdefault(cls, 0)
+                detect_dic[cls] += 1
+                # f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
+                
+print(detect_dic[67])
 
 
 #         ax.scatter(pt[:1], pt[1:], color=color)

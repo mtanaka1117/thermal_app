@@ -32,8 +32,8 @@ def feature_compare(img1, img2):
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
-path = '/home/srv-admin/images/items1/1313/*.jpg'
-# path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
+# path = '/home/srv-admin/images/items1/1313/*.jpg'
+path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 
 # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -52,6 +52,8 @@ kernel = np.ones((5,5),np.uint8)
 
 model = YOLO("yolov8x.pt")
 class_dic = model.model.names
+
+detect_list = dict()
 
 for i in file_list:
     try:
@@ -89,8 +91,6 @@ for i in file_list:
             bbox = pred[0].boxes.xyxy.cpu().numpy()
             classes = pred[0].boxes.cls.cpu().numpy()
 
-
-
             # cv2.imshow("img", frame)
             # cv2.waitKey(1)
 
@@ -103,7 +103,8 @@ for i in file_list:
                     for poly, cls in zip(polygon, classes):
                         if cv2.pointPolygonTest(poly, pt, False) >= 0:
                             # print(class_dic[cls])
-                            f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls] + "\n")
+                            detect_list[cls]
+                            f.write(str(datetime.datetime.now()) + ", " + "place: table, " + class_dic[cls] + "\n")
             
 
             if (feature_compare(b_img_v, img_v)<12):

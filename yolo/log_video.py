@@ -5,6 +5,7 @@ from more_itertools import peekable
 from ultralytics import YOLO
 from matplotlib import pyplot as plt
 import datetime
+import csv
 
 def feature_compare(img1, img2):
     '''
@@ -51,7 +52,7 @@ b_img_v = bg_v.copy()
 kernel = np.ones((5,5),np.uint8)
 
 model = YOLO("yolov8x.pt")
-class_dic = model.model.names
+# class_dic = model.model.names
 
 # detect_list = dict()
 
@@ -88,25 +89,26 @@ for i in file_list:
             
             pred = model.predict(img_v_color, classes=[67, 73, 76])
             frame = pred[0].plot()
-            bbox = pred[0].boxes.xyxy.cpu().numpy()
+            bboxes = pred[0].boxes.xyxy.cpu().numpy()
             classes = pred[0].boxes.cls.cpu().numpy()
-
-            
 
             # cv2.imshow("img", frame)
             # cv2.waitKey(1)
 
             polygon = []
-            for x1, y1, x2, y2 in bbox:
+            for x1, y1, x2, y2 in bboxes:
                 polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
 
-            with open("example.txt", "a") as f:
-                for poly, cls in zip(polygon, classes):
+            with open("example.csv", "a") as f:
+                for poly, cls, bbox in zip(polygon, classes, bboxes):
                     for pt in points:
                         if cv2.pointPolygonTest(poly, pt, False) >= 0:
                             # print(class_dic[cls])
                             # detect_list[cls]
-                            f.write(str(datetime.datetime.now()) + ", " + "place: table, " + class_dic[cls] + "\n")
+                            data = [[datetime.datetime.now(), "table", cls, bbox]]
+                            writer = csv.writer(f)
+                            writer.writerows(data)
+                            # f.write(str(datetime.datetime.now()) + ", " + "place: table, " + cls + "bb: ")
             
 
             if (feature_compare(b_img_v, img_v)<12):

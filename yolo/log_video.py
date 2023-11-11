@@ -105,9 +105,10 @@ for i in file_list:
                         if cv2.pointPolygonTest(poly, pt, False) >= 0:
                             # print(class_dic[cls])
                             # detect_list[cls]
-                            data = [[datetime.datetime.now(), "table", cls, bbox]]
+                            data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
                             writer = csv.writer(f)
                             writer.writerows(data)
+                            break
                             # f.write(str(datetime.datetime.now()) + ", " + "place: table, " + cls + "bb: ")
             
 

@@ -33,8 +33,8 @@ def feature_compare(img1, img2):
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
-path = '/home/srv-admin/images/items1/1313/*.jpg'
-# path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
+# path = '/home/srv-admin/images/items1/1313/*.jpg'
+path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 
 # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -105,9 +105,10 @@ for i in file_list:
                         if cv2.pointPolygonTest(poly, pt, False) >= 0:
                             # print(class_dic[cls])
                             # detect_list[cls]
-                            data = [[datetime.datetime.now(), "table", cls, bbox]]
+                            data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
                             writer = csv.writer(f)
                             writer.writerows(data)
+                            break
                             # f.write(str(datetime.datetime.now()) + ", " + "place: table, " + cls + "bb: ")
             
 

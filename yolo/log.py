@@ -8,15 +8,15 @@ import datetime
 from collections import deque, Counter
 import pandas as pd
 
-# b_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.jpg'
-# a_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg'
+b_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.jpg'
+a_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg'
 
-# visible_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg'
+visible_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg'
 
-b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
-a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
+# b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
+# a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
 
-visible_path = "/home/srv-admin/images/items1/1313/20230807_131358202_V.jpg"
+# visible_path = "/home/srv-admin/images/items1/1313/20230807_131358202_V.jpg"
 
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
@@ -56,11 +56,11 @@ pred = model.predict(im_v, classes=[67,73,76])
 frame = pred[0].plot()
 bbox = pred[0].boxes.xyxy.cpu().numpy()
 classes = pred[0].boxes.cls.cpu().numpy()
-# print(bbox)
+print(bbox)
 
-polygon = []
-for x1, y1, x2, y2 in bbox:
-    polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
+# polygon = []
+# for x1, y1, x2, y2 in bbox:
+#     polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
 
 
 # fig, ax = plt.subplots()  
@@ -68,22 +68,17 @@ for x1, y1, x2, y2 in bbox:
 # for i in polygon:
 #     ax.add_patch(plt.Polygon(i,fill=False))
 
-# detect_list = deque(maxlen=5)
-# detect_dic = {}
-df = pd.DataFrame(data=None, index=['time', 'place', 'item'])
 
-with open("example.txt", "w") as f:
-    for pt in points:
-        for poly, cls in zip(polygon, classes):
-            if cv2.pointPolygonTest(poly, pt, False) >= 0:
+# with open("example.txt", "w") as f:
+#     for pt in points:
+#         for poly, cls in zip(polygon, classes):
+#             if cv2.pointPolygonTest(poly, pt, False) >= 0:
                 # print(class_dic[cls])
                 # detect_dic.setdefault(cls, 0)
                 # detect_dic[cls] += 1
 
-                df.append({'time': datetime.datetime.now(), 'place': 'table', 'item': class_dic[cls]})
                 # f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
-                
-print(df)
+
 
 
 #         ax.scatter(pt[:1], pt[1:], color=color)

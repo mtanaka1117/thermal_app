@@ -49,15 +49,14 @@ with open('dummy.csv') as f:
         else:
             df_con = pd.concat([df_con, df_split[i]])
         
-    
     df_con = df_con.reset_index(drop=True) #index振り直し
     label = df_con['label']
     time = df_con['time']
     thres_time = datetime.timedelta(minutes=1)
     
     #一定時間以内で、既にあるラベルは取り除く
-    for i in range(1, len(time)):
-        if label[i]==label[i-1] and time[i]-time[i-1]<thres_time:
+    for i in range(1, len(time)-1):
+        if label[i]==label[i-1] and time[i]-time[i-1]<thres_time and label[i]==label[i+1]:
             df_con.drop(i, inplace=True)
     
     #時間順に並び替え

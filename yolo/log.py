@@ -56,7 +56,7 @@ pred = model.predict(im_v, classes=[67,73,76])
 frame = pred[0].plot()
 bbox = pred[0].boxes.xyxy.cpu().numpy()
 classes = pred[0].boxes.cls.cpu().numpy()
-print(bbox)
+
 
 # polygon = []
 # for x1, y1, x2, y2 in bbox:

@@ -33,7 +33,7 @@ def feature_compare(img1, img2):
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
-path = '/home/srv-admin/images/items1/1313/*.jpg'
+path = '/home/srv-admin/images/items*/*/*.jpg'
 # path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 

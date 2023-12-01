@@ -23,7 +23,7 @@ with open(csv_path) as f:
             n = label_dict[label][2]
             
             #bboxの平均を更新
-            label_dict[label][3] = [(n*y+x)/(n+1) for x, y in zip(bbox, bbox_avg)]
+            label_dict[label][3] = [round((n*y+x)/(n+1), 4) for x, y in zip(bbox, bbox_avg)]
             
             #最後に物体が確認された時間
             last_time = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S.%f')

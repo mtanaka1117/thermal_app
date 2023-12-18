@@ -1,9 +1,7 @@
-import pandas as pd
 import datetime
 import csv
-import pprint
 
-csv_path = 'dummy.csv'
+csv_path = 'example.csv'
 # df_dict = {}
 label_dict = {}
 
@@ -28,23 +26,23 @@ with open(csv_path) as f:
             #最後に物体が確認された時間
             last_time = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S.%f')
     
-            if last_time - label_dict[label][1] < datetime.timedelta(minutes=1):
+            if last_time - label_dict[label][1] < datetime.timedelta(seconds=30):
                 label_dict[label][1] = last_time
 
             #物体が一定時間を超えて再び確認された場合
             else:
-                with open('result.csv', 'a') as w:
+                with open('results.csv', 'a', newline='') as w:
                     writer = csv.writer(w)
-                    writer.writerow([label])
-                    writer.writerow(label_dict[label])
+                    line = [label] + label_dict[label]
+                    writer.writerow(line)
                 
-                label_dict[label] = [df_time, df_time, 1, [float(c) for c in row[3][1:-1].split(',')]]
+                label_dict[label] = [last_time, last_time, 1, [float(c) for c in row[3][1:-1].split(',')]]
 
-    with open('result.csv', 'a') as w:
-        writer = csv.writer(w, lineterminator="\n")
+    with open('results.csv', 'a', newline="") as w:
+        writer = csv.writer(w)
         for label in label_dict.keys():
-            writer.writerow([label])
-            writer.writerow(label_dict[label])
+            line = [label] + label_dict[label]
+            writer.writerow(line)
     
 
 # with open(csv_path) as f:

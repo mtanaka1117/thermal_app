@@ -6,6 +6,7 @@ from ultralytics import YOLO
 from matplotlib import pyplot as plt
 import datetime
 import csv
+# import time
 
 def feature_compare(img1, img2):
     '''
@@ -30,15 +31,17 @@ def feature_compare(img1, img2):
 #         points.append((cx, cy))
 #     return 
 
+# start = time.time()
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
 path = '/home/srv-admin/images/items*/*/*.jpg'
+# path = '/home/srv-admin/images/items1/1313/*.jpg'
 # path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 
-# fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-# video = cv2.VideoWriter('log.mp4',fourcc, 30.3, (640, 480))
+fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+video = cv2.VideoWriter('log.mp4',fourcc, 30.3, (640, 480))
 
 if '_V' in file_list.peek():
     bg_v = cv2.imread(next(file_list), 0)
@@ -52,9 +55,8 @@ b_img_v = bg_v.copy()
 kernel = np.ones((5,5),np.uint8)
 
 model = YOLO("yolov8x.pt")
-# class_dic = model.model.names
 
-# detect_list = dict()
+classes = list(range(1, 80))
 
 for i in file_list:
     try:
@@ -87,10 +89,17 @@ for i in file_list:
                 cy = M["m01"] / M["m00"]
                 points.append((cx, cy))
             
-            pred = model.predict(img_v_color, classes=[67, 73, 76])
+            pred = model.predict(img_v_color, classes=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79])
             frame = pred[0].plot()
             bboxes = pred[0].boxes.xyxy.cpu().numpy()
             classes = pred[0].boxes.cls.cpu().numpy()
+            
+            mask = cv2.subtract(erode_t, erode_v)
+            mask_inv = cv2.bitwise_not(mask)
+            back = cv2.bitwise_and(frame, frame, mask_inv)
+            cut = cv2.bitwise_and(mask, mask, mask)
+            cut = cv2.cvtColor(cut, cv2.COLOR_GRAY2BGR)
+            paste = cv2.add(back, cut)
 
             # cv2.imshow("img", frame)
             # cv2.waitKey(1)
@@ -101,28 +110,29 @@ for i in file_list:
 
             with open("example.csv", "a") as f:
                 for poly, cls, bbox in zip(polygon, classes, bboxes):
+                    # data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
+                    # writer = csv.writer(f)
+                    # writer.writerows(data)
                     for pt in points:
                         if cv2.pointPolygonTest(poly, pt, False) >= 0:
-                            # print(class_dic[cls])
-                            # detect_list[cls]
                             data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
                             writer = csv.writer(f)
                             writer.writerows(data)
                             break
-                            # f.write(str(datetime.datetime.now()) + ", " + "place: table, " + cls + "bb: ")
-            
 
             if (feature_compare(b_img_v, img_v)<12):
                 bg_v = img_v.copy()
                 # print('更新')
             else: b_img_v = img_v.copy()
             
+            video.write(paste)
 
     except StopIteration:
         break
 
-# video.release()
-
+video.release()
+# end = time.time()
+# print(end-start)
 
 
 

@@ -33,16 +33,18 @@ with open(csv_path) as f:
             else:
                 with open('results.csv', 'a', newline='') as w:
                     writer = csv.writer(w)
-                    line = [label] + label_dict[label]
-                    writer.writerow(line)
+                    if (label_dict[label][2] > 20):
+                        line = [label] + label_dict[label]
+                        writer.writerow(line)
                 
                 label_dict[label] = [last_time, last_time, 1, [float(c) for c in row[3][1:-1].split(',')]]
 
     with open('results.csv', 'a', newline="") as w:
         writer = csv.writer(w)
         for label in label_dict.keys():
-            line = [label] + label_dict[label]
-            writer.writerow(line)
+            if (label_dict[label][2] > 20):
+                line = [label] + label_dict[label]
+                writer.writerow(line)
     
 
 # with open(csv_path) as f:

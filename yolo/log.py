@@ -11,7 +11,7 @@ import pandas as pd
 b_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131354592_T.jpg'
 a_thermal_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg'
 
-visible_path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg'
+visible_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358567_V.jpg"
 
 # b_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131354592_T.jpg"
 # a_thermal_path = "/home/srv-admin/images/items1/1313/20230807_131358192_T.jpg"
@@ -33,7 +33,6 @@ kernel = np.ones((5,5),np.uint8)
 dilate = cv2.dilate(img_th, kernel, 2)
 img_binary = cv2.warpAffine(dilate, affine_matrix, (im_v.shape[1], im_v.shape[0]))
 
-# retval, labels, _, centroids = cv2.connectedComponentsWithStats(img_binary)
 contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 contours = list(filter(lambda x: cv2.contourArea(x) > 100, contours))
 # cv2.drawContours(im_v, contours, -1, (0,0,255), 2)
@@ -52,47 +51,46 @@ for i in contours:
 model = YOLO("yolov8x.pt")
 class_dic = model.model.names
 
-pred = model.predict(im_v, classes=[67,73,76])
-frame = pred[0].plot()
+pred = model.predict(im_v, classes=[67,73,76], conf=0.085)
+frame = pred[0].plot(labels=False)
 bbox = pred[0].boxes.xyxy.cpu().numpy()
 classes = pred[0].boxes.cls.cpu().numpy()
 
 
-# polygon = []
-# for x1, y1, x2, y2 in bbox:
-#     polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
+polygon = []
+for x1, y1, x2, y2 in bbox:
+    polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
 
 
-# fig, ax = plt.subplots()  
-# plt.axis([0,640,0,480])
-# for i in polygon:
-#     ax.add_patch(plt.Polygon(i,fill=False))
+fig, ax = plt.subplots()  
+plt.axis([0,640,0,480])
+for i in polygon:
+    ax.add_patch(plt.Polygon(i,fill=False))
 
 
 # with open("example.txt", "w") as f:
-#     for pt in points:
-#         for poly, cls in zip(polygon, classes):
-#             if cv2.pointPolygonTest(poly, pt, False) >= 0:
-                # print(class_dic[cls])
-                # detect_dic.setdefault(cls, 0)
-                # detect_dic[cls] += 1
+# for pt in points:
+#     for poly, cls in zip(polygon, classes):
+#         if cv2.pointPolygonTest(poly, pt, False) >= 0:
+            # print(class_dic[cls])
+            # detect_dic.setdefault(cls, 0)
+            # detect_dic[cls] += 1
 
-                # f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
+            # f.write(str(datetime.datetime.now()) + ", " + "at: table, " + class_dic[cls])
 
-
-
-#         ax.scatter(pt[:1], pt[1:], color=color)
-# ax.set_ylim(ax.get_ylim()[::-1])
-# ax.xaxis.tick_top()
-# ax.yaxis.tick_left()
-# plt.show()
-
-# mask_inv = cv2.bitwise_not(img_binary)
-# back = cv2.bitwise_and(frame, frame, mask_inv)
-# cut = cv2.cvtColor(cv2.bitwise_and(img_binary, img_binary, img_binary), cv2.COLOR_GRAY2BGR)
-# paste = cv2.add(back, cut)
+            # ax.scatter(pt[:1], pt[1:], color="red")
+            # ax.set_ylim(ax.get_ylim()[::-1])
+            # ax.xaxis.tick_top()
+            # ax.yaxis.tick_left()
+            # plt.show()
 
 
-# cv2.imshow('img', im_v)
+mask_inv = cv2.bitwise_not(img_binary)
+back = cv2.bitwise_and(frame, frame, mask_inv)
+cut = cv2.cvtColor(cv2.bitwise_and(img_binary, img_binary, img_binary), cv2.COLOR_GRAY2BGR)
+paste = cv2.add(back, cut)
+
+cv2.imwrite('../img/thesis_image/touch_region.jpg', paste)
+cv2.imshow('img', paste)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()

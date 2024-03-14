@@ -1,9 +1,6 @@
-import cv2
 import numpy as np
-from PIL import Image
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 
 thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131356192_T.dat"
 # thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358326_T.dat"

@@ -76,6 +76,7 @@ def registration(P, x_dash, y_dash):
     affine_matrix[0, :] = w1
     affine_matrix[1, :] = w2
     print(affine_matrix)
+    print("逆行列", np.linalg.inv(affine_matrix))
     return affine_matrix
 
 
@@ -138,10 +139,13 @@ def onEnter(event):
 
 
 # 画像読み込み
-a_thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg"
-visible_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg"
+# thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg"
+# visible_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg"
 
-image1 = np.array(Image.open(a_thermal_path).convert('L'))
+thermal_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859956_T.jpg"
+visible_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859978_V.jpg"
+
+image1 = np.array(Image.open(thermal_path).convert('L'))
 image2 = np.array(Image.open(visible_path).convert('L'))
 # 画像の最後にbg_colorの色追加
 bg_color = 256

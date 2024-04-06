@@ -35,13 +35,15 @@ def feature_compare(img1, img2):
 affine_matrix = np.array([[ 1.15775321e+00, 2.06036561e-02, -8.65530736e+01],
                         [-3.59868529e-02, 1.16843440e+00, -4.39524932e+01]])
 
-path = '/home/srv-admin/images/items*/*/*.jpg'
-# path = '/home/srv-admin/images/items1/1313/*.jpg'
+# path = '/home/srv-admin/images/items*/*/*.jpg'
+path = '/home/srv-admin/images/items2/*/*.jpg'
 # path = r'C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\*.jpg'
 file_list = peekable(sorted(glob.iglob(path)))
 
-# fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-# video = cv2.VideoWriter('log.mp4',fourcc, 30.3, (640, 480))
+fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+video = cv2.VideoWriter('log.mp4',fourcc, 30.3, (640, 480))
+video2 = cv2.VideoWriter('log_v.mp4',fourcc, 30.3, (640, 480), isColor=False)
+video3 = cv2.VideoWriter('log_t.mp4',fourcc, 30.3, (640, 480), isColor=False)
 
 if '_V' in file_list.peek():
     bg_v = cv2.imread(next(file_list), 0)
@@ -55,7 +57,6 @@ b_img_v = bg_v.copy()
 kernel = np.ones((5,5),np.uint8)
 
 model = YOLO("yolov8x.pt")
-classes = list(range(1, 80))
 
 for i in file_list:
     try:
@@ -64,14 +65,15 @@ for i in file_list:
             img_v_color = cv2.imread(i)
             diff_v = cv2.absdiff(img_v, bg_v)
             _, img_th_v = cv2.threshold(diff_v,30,255,cv2.THRESH_BINARY)
-            dilate_v = cv2.dilate(img_th_v,kernel,iterations=5)
+            dilate_v = cv2.dilate(img_th_v,kernel,5)
             erode_v = cv2.erode(dilate_v, kernel, 2)
 
             img_t = cv2.imread(next(file_list), 0)
             diff_t = cv2.absdiff(img_t, bg_t)
             affined_t = cv2.warpAffine(diff_t, affine_matrix, (img_v.shape[1], img_v.shape[0]))
             _, img_th_t = cv2.threshold(affined_t,12,255,cv2.THRESH_BINARY)
-            dilate_t = cv2.dilate(img_th_t,kernel,3)
+            # erode_t = cv2.erode(img_th_t, kernel, 3)
+            dilate_t = cv2.dilate(img_th_t, kernel, 3)
             erode_t = cv2.erode(dilate_t, kernel, 2)
 
             touch_region = cv2.subtract(erode_t, erode_v)
@@ -94,54 +96,56 @@ for i in file_list:
             classes = pred[0].boxes.cls.cpu().numpy()
             
             # mask = cv2.subtract(erode_t, erode_v)
-            # mask_inv = cv2.bitwise_not(mask)
-            # back = cv2.bitwise_and(frame, frame, mask_inv)
-            # cut = cv2.bitwise_and(mask, mask, mask)
-            # cut = cv2.cvtColor(cut, cv2.COLOR_GRAY2BGR)
-            # paste = cv2.add(back, cut)
+            mask_inv = cv2.bitwise_not(touch_region)
+            back = cv2.bitwise_and(frame, frame, mask_inv)
+            cut = cv2.bitwise_and(touch_region, touch_region, touch_region)
+            cut = cv2.cvtColor(cut, cv2.COLOR_GRAY2BGR)
+            paste = cv2.add(back, cut)
 
             # cv2.imshow("img", frame)
             # cv2.waitKey(1)
 
-            polygon = []
-            for x1, y1, x2, y2 in bboxes:
-                polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
+            # polygon = []
+            # for x1, y1, x2, y2 in bboxes:
+            #     polygon.append(np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]))
 
-            with open("example.csv", "a") as f:
-                for poly, cls, bbox in zip(polygon, classes, bboxes):
+            # with open("example.csv", "a") as f:
+            #     for poly, cls, bbox in zip(polygon, classes, bboxes):
                     # data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
                     # writer = csv.writer(f)
                     # writer.writerows(data)
-                    for pt in points:
-                        if cv2.pointPolygonTest(poly, pt, False) >= 0:
-                            now = datetime.datetime.now()
-                            data = [[datetime.datetime.now(), "table", cls, list(bbox)]]
-                            writer = csv.writer(f)
-                            writer.writerows(data)
+                    # for pt in points:
+                    #     if cv2.pointPolygonTest(poly, pt, False) >= 0:
+                    #         now = datetime.datetime.now()
+                    #         data = [[now, "table", cls, list(bbox)]]
+                    #         writer = csv.writer(f)
+                    #         writer.writerows(data)
                             
-                            xmin, ymin, xmax, ymax = map(int, bbox[:4])
-                            crop = img_v_color[ymin:ymax, xmin:xmax]
-                            path = './thumbnails/{}'.format(int(cls))
-                            if not os.path.exists(path): os.mkdir(path)
-                            cv2.imwrite('./thumbnails/{}/{}.png'.format(int(cls), now), crop)
+                    #         xmin, ymin, xmax, ymax = map(int, bbox[:4])
+                    #         crop = img_v_color[ymin:ymax, xmin:xmax]
+                    #         path = './thumbnails/{}'.format(int(cls))
+                    #         if not os.path.exists(path): os.mkdir(path)
+                    #         cv2.imwrite('./thumbnails/{}/{}.png'.format(int(cls), now), crop)
                             
-                            overview = img_v_color.copy()
-                            cv2.rectangle(overview, (xmin,ymin), (xmax,ymax), (0, 0, 255), thickness=5)
-                            cv2.imwrite('./thumbnails/{}/detail_{}.png'.format(int(cls), now), overview)
+                    #         overview = img_v_color.copy()
+                    #         cv2.rectangle(overview, (xmin,ymin), (xmax,ymax), (0, 0, 255), thickness=5)
+                    #         cv2.imwrite('./thumbnails/{}/detail_{}.png'.format(int(cls), now), overview)
                             
-                            break
+                    #         break
 
-            if (feature_compare(b_img_v, img_v)<12):
+            if (feature_compare(b_img_v, img_v)<10.5):
                 bg_v = img_v.copy()
                 # print('更新')
             else: b_img_v = img_v.copy()
             
-            # video.write(paste)
+            video.write(paste)
+            video2.write(diff_v)
+            video3.write(erode_t)
 
     except StopIteration:
         break
 
-# video.release()
+video.release()
 # end = time.time()
 # print(end-start)
 

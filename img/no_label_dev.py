@@ -26,23 +26,6 @@ def feature_compare(img1, img2):
     ret = sum(dist) / len(dist)
     return ret
 
-# https://qiita.com/TheJuniorTheSenior/items/b76fed3832c149907b82
-# @jit
-# def calc_dist(diff):
-#     dist = np.sqrt(np.dot(diff.T, diff))
-#     return dist
-
-# def calc_min_dist(a, b, c):
-#     '''
-#     a,b,c: 3次元上の点
-#     3点間の距離の和が最も小さいものを返す
-#     '''
-#     dist_ab = calc_dist(a-b)
-#     dist_bc = calc_dist(b-c)
-#     dist_ca = calc_dist(c-a)
-    
-#     return min(dist_ab+dist_ca, dist_bc+dist_ab, dist_ca+dist_bc)
-
 # def get_center(img1, img2):
 #     points = []
 #     for i in contours:
@@ -63,10 +46,11 @@ affine_matrix = np.array([[1.15919938e+00, 7.27146534e-02, -5.70173323e+01],
 # path = '/home/srv-admin/images/items1/1313/*.jpg'
 # path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\*jpg"
 path = r"C:\Users\tnkmo\Downloads\yolo+1\yolo+1\20240112_1450\*jpg"
+# path = r"C:\Users\tnkmo\Downloads\items1\items1\*\*.jpg"
 file_list = peekable(sorted(glob.iglob(path)))
 
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-video = cv2.VideoWriter('no_label.mp4',fourcc, 30.3, (640, 480), isColor=True)
+video = cv2.VideoWriter('no_label.mp4',fourcc, 30.3, (640, 480), isColor=False)
 
 if '_V' in file_list.peek():
     bg_v = cv2.imread(next(file_list))
@@ -77,6 +61,7 @@ else:
     bg_t = cv2.imread(next(file_list))
     
 b_img_v = bg_v.copy()
+bg_first_v = bg_v.copy()
 kernel = np.ones((5,5),np.uint8)
 
 # model = YOLO("yolov8x.pt")
@@ -105,7 +90,11 @@ for i in file_list:
             erode_t = cv2.erode(dilate_t, kernel, 2)
 
             undefined_obj = img_v.copy()
-            contours, _ = cv2.findContours(img_th_v, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            diff = cv2.absdiff(img_v, bg_first_v)
+            diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+            _, thres = cv2.threshold(diff,20,255,cv2.THRESH_BINARY)
+            dilate = cv2.dilate(thres, kernel, 5)
+            contours, _ = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
             for contour in contours:
                 area = cv2.contourArea(contour)
                 # 面積が一定以上の場合にのみ矩形を描画
@@ -179,7 +168,7 @@ for i in file_list:
                 bg_count += 1
             else: b_img_v = img_v.copy()
             
-            video.write(undefined_obj)
+            video.write(thres)
 
     except StopIteration:
         break

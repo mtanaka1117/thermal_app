@@ -1,16 +1,32 @@
 from flirpy.camera.boson import Boson
 import cv2
 import numpy as np
+import datetime as dt
+
+# camera = Boson()
+# img = camera.grab()
+# f = open("boson.dat", "wb")
+# f.write(img)
+# f.close()
+
+
+TEMP_MIN = -60.0
+TEMP_MAX = -40.0
 
 with Boson() as camera:
     while True:
-        img = camera.grab().astype(np.float32)
-        # Rescale to 8 bit
-        img = 255*(img - img.min())/(img.max()-img.min())
-        img_col = img.astype(np.uint8)
-        # img_col = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_INFERNO)
+        img = camera.grab()
         
-        cv2.imshow('Boson', img_col)
+        #書き込み
+        now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
+        with open('./thermal/{}_T.dat'.format(now), 'wb') as f:
+            f.write(img)
+            
+        img = img.astype(np.uint16).reshape([512, 640])/100 - 273.15
+        img = 255.0*(img - TEMP_MIN)/(TEMP_MAX - TEMP_MIN)
+        img = img.astype(np.uint8)
+        
+        cv2.imshow('Boson', img)
         if cv2.waitKey(1) == 27:
             break  # esc to quit
 

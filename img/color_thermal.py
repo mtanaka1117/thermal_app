@@ -2,14 +2,15 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131356192_T.dat"
+# thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131356192_T.dat"
 # thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358326_T.dat"
+thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1314\20230807_131453959_T.dat"
 
 # "C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131356170_V.jpg"
 # "C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358300_V.jpg"
 
-TEMP_MIN = 60.0
-TEMP_MAX = 160.0
+TEMP_MIN = 50.0
+TEMP_MAX = 200.0
 
 def thermal_image(path, output_path):
     with open(path, "rb") as f:
@@ -24,8 +25,8 @@ def thermal_image(path, output_path):
         ax = sns.heatmap(data, vmin=TEMP_MIN, vmax=TEMP_MAX, cmap="jet", cbar=False)
         ax.set_xticks([])
         ax.set_yticks([])
-        # plt.savefig(output_path)
+        plt.savefig(output_path)
         plt.show()
 
 
-thermal_image(thermal_path, '')
+thermal_image(thermal_path, './thesis_image/b.jpg')

@@ -143,15 +143,15 @@ ax[1,1].set_title('plastic', size=16)
 
 for ax in fig.get_axes():
     ax.set_ylim(23.8, 26.3)
-    ax.set_xlabel("時間（秒）", fontsize=16)
-    ax.set_ylabel("温度（℃）", fontsize=16)
+    ax.set_xlabel("Time (s)", fontsize=16)
+    ax.set_ylabel("Temperature (℃)", fontsize=16)
     ax.tick_params(labelsize=12)
     ax.set_xticks([0, 600, 1200, 1800, 2400, 3000, 3600, 4200, 4800, 5400], [0, 20, 40, 60, 80, 100, 120, 140, 160, 180], rotation=30)
     ax.legend()
 
 
 plt.tight_layout()
-plt.savefig('./thesis_image/temp_graph.jpg')
+plt.savefig('./thesis_image/temp_graph_en.jpg')
 plt.show()
 
 # fig = plt.figure()

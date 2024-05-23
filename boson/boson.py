@@ -3,13 +3,6 @@ import cv2
 import numpy as np
 import datetime as dt
 
-# camera = Boson()
-# img = camera.grab()
-# f = open("boson.dat", "wb")
-# f.write(img)
-# f.close()
-
-
 TEMP_MIN = -60.0
 TEMP_MAX = -40.0
 

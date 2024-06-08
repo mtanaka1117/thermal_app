@@ -11,9 +11,9 @@ with Boson() as camera:
         img = camera.grab()
         
         #書き込み
-        now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
-        with open('./thermal/{}_T.dat'.format(now), 'wb') as f:
-            f.write(img)
+        # now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
+        # with open('./thermal/{}_T.dat'.format(now), 'wb') as f:
+        #     f.write(img)
             
         img = img.astype(np.uint16).reshape([512, 640])/100 - 273.15
         img = 255.0*(img - TEMP_MIN)/(TEMP_MAX - TEMP_MIN)

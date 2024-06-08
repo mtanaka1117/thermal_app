@@ -145,8 +145,9 @@ def onEnter(event):
 # thermal_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859956_T.jpg"
 # visible_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859978_V.jpg"
 
-thermal_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\thermal\20240523_110138156_T.jpg"
-visible_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\thermal\20240523_110138156_V.jpg"
+thermal_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\data\0608\table\20240608_111002791_T.jpg"
+visible_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\data\0608\table\20240608_111002791_V.jpg"
+
 
 image1 = np.array(Image.open(thermal_path).convert('L'))
 image2 = np.array(Image.open(visible_path).convert('L'))

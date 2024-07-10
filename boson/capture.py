@@ -23,6 +23,8 @@ args = parser.parse_args()
 cap_v = cv2.VideoCapture(1)
 cap_t = Boson()
 
+
+# python3 .\capture.py --mode calibration
 if args.mode == "calibration":
     while True:
         img_t = cap_t.grab()
@@ -32,28 +34,29 @@ if args.mode == "calibration":
         img_t = 255.0*(img_t - img_t.min())/(img_t.max() - img_t.min())
         img_t = img_t.astype(np.uint8)
         
-        img_col = cv2.applyColorMap(img_t, cv2.COLORMAP_JET)
+        img_col = cv2.applyColorMap(img_t, cv2.COLORMAP_INFERNO)
         img_col = hconcat_resize_min([img_col, img_v, img_col])
         mergeImg = np.hstack((img_col, img_v))
         
         cv2.imshow('Boson', mergeImg)
         
         if cv2.waitKey(1) == 27:
-            cv2.imwrite('./data/0701/test_table_T.jpg', img_t)
-            cv2.imwrite('./data/0701/test_table_V.jpg', img_v)
+            cv2.imwrite('./data/0709/test_table_T.jpg', img_t)
+            cv2.imwrite('./data/0709/test_table_V.jpg', img_v)
             break  # esc to quit
             
     cv2.destroyAllWindows()
 
+# python3 .\capture.py --mode capture
 if args.mode == "capture":
     while True:
         img_t = cap_t.grab()
         _, img_v = cap_v.read()
         
         now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
-        with open('./data/0701/table/{}_T.dat'.format(now), 'wb') as f:
+        with open('./data/0709/table/{}_T.dat'.format(now), 'wb') as f:
             f.write(img_t)
-        cv2.imwrite('./data/0701/table/{}_V.jpg'.format(now), img_v)
+        cv2.imwrite('./data/0709/table/{}_V.jpg'.format(now), img_v)
         
         img_t = img_t.astype(np.uint16).reshape([512, 640])/100 - 273.15
         img_t = 255.0*(img_t - TEMP_MIN)/(TEMP_MAX - TEMP_MIN)

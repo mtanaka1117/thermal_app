@@ -4,15 +4,16 @@ from more_itertools import peekable
 import matplotlib.pyplot as plt
 import japanize_matplotlib
 import os
+from tqdm import tqdm
 
-path = r"C:\Users\tnkmo\Downloads\table\*_T.dat"
+path = "./data/0709/table/*_T.dat"
 file_list = peekable(sorted(glob.iglob(path)))
 
 firstLoop = True
 y = []
 z = []
 
-for file in file_list:
+for file in tqdm(file_list):
     with open(file, "rb") as f:
         img_binary = f.read()
         data = np.frombuffer(img_binary, dtype=np.uint16).reshape([512, 640])/100 - 273.15

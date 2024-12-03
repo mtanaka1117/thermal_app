@@ -153,34 +153,3 @@ for ax in fig.get_axes():
 plt.tight_layout()
 plt.savefig('./thesis_image/temp_graph_en.jpg')
 plt.show()
-
-# fig = plt.figure()
-# plt.plot(book_pd.rolling(10).mean(), label="book", color="red")
-# plt.plot(paper_pd.rolling(10).mean(), label="paper", color="red")
-# plt.plot(cup_pd.rolling(10).mean(), label="stainless cup", color="red")
-# plt.plot(plastic_pd.rolling(10).mean(), label="plastic", color="red")
-
-
-# plt.axhline(y=book_one_sigma, xmin=0.065, xmax=0.98, color="blue", label="+1σ")
-# plt.axhline(y=paper_one_sigma, xmin=0.065, xmax=0.98, color="blue", label="+1σ")
-# plt.axhline(y=cup_one_sigma, xmin=0.065, xmax=0.98, color="blue", label="+1σ")
-# plt.axhline(y=plastic_one_sigma, xmin=0.065, xmax=0.98, color="blue", label="+1σ")
-
-
-# plt.axhline(y=book_two_sigma, xmin=0.065, xmax=0.98, color="green", label="+2σ")
-# plt.axhline(y=paper_two_sigma, xmin=0.065, xmax=0.98, color="green", label="+2σ")
-# plt.axhline(y=cup_two_sigma, xmin=0.065, xmax=0.98, color="green", label="+2σ")
-# plt.axhline(y=plastic_two_sigma, xmin=0.065, xmax=0.98, color="green", label="+2σ")
-
-
-# plt.rcParams["font.size"] = 20
-# plt.xlabel("時間（秒）", {'fontsize':18})
-# plt.ylabel("温度（℃）", {'fontsize':18})
-# plt.xticks([0, 600, 1200, 1800, 2400, 3000, 3600, 4200, 4800, 5400], [0, 20, 40, 60, 80, 100, 120, 140, 160, 180])
-# plt.ylim(23.5, 26.5)
-
-# plt.tick_params(labelsize=14)
-# plt.tight_layout()
-# plt.legend()
-# plt.savefig('./thesis_image/book.jpg')
-# plt.show()

@@ -48,7 +48,7 @@ def delete_unselected_files(directory, selected_files):
     for filename in files_to_delete:
         os.remove(os.path.join(directory, filename))
 
-directory = './data/0709/table/'
+directory = './data/0712/table/'
 selected_files = collect_files_near_intervals(directory)
 
 # for file in selected_files:

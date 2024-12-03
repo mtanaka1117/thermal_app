@@ -6,7 +6,7 @@ import japanize_matplotlib
 import os
 from tqdm import tqdm
 
-path = "./data/0709/table/*_T.dat"
+path = "./data/0731/table3/*_T.dat"
 file_list = peekable(sorted(glob.iglob(path)))
 
 firstLoop = True
@@ -31,7 +31,7 @@ for file in tqdm(file_list):
                 diff = THRES_TEMP - temp_fixed
                 data = (data + diff + 273.15) * 100
                 data = data.astype(np.uint16)
-                with open('./data/0709/table/{}'.format(os.path.basename(file)), 'wb') as f:
+                with open('./data/0731/table3/{}'.format(os.path.basename(file)), 'wb') as f:
                     f.write(data.tobytes())
 
                 # y.append(np.mean(data))
@@ -39,7 +39,7 @@ for file in tqdm(file_list):
             else:
                 data = (data + 273.15) * 100
                 data = data.astype(np.uint16)
-                with open('./data/0709/table/{}'.format(os.path.basename(file)), 'wb') as f:
+                with open('./data/0731/table3/{}'.format(os.path.basename(file)), 'wb') as f:
                     f.write(data.tobytes())
 
 

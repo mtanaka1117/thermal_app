@@ -41,8 +41,8 @@ if args.mode == "calibration":
         cv2.imshow('Boson', mergeImg)
         
         if cv2.waitKey(1) == 27:
-            cv2.imwrite('./data/0709/test_table_T.jpg', img_t)
-            cv2.imwrite('./data/0709/test_table_V.jpg', img_v)
+            cv2.imwrite('./data/0731/table3/test_table3_T.jpg', img_t)
+            cv2.imwrite('./data/0731/table3/test_table3_V.jpg', img_v)
             break  # esc to quit
             
     cv2.destroyAllWindows()
@@ -54,9 +54,9 @@ if args.mode == "capture":
         _, img_v = cap_v.read()
         
         now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
-        with open('./data/0709/table/{}_T.dat'.format(now), 'wb') as f:
+        with open('./data/0731/table3/{}_T.dat'.format(now), 'wb') as f:
             f.write(img_t)
-        cv2.imwrite('./data/0709/table/{}_V.jpg'.format(now), img_v)
+        cv2.imwrite('./data/0731/table3/{}_V.jpg'.format(now), img_v)
         
         img_t = img_t.astype(np.uint16).reshape([512, 640])/100 - 273.15
         img_t = 255.0*(img_t - TEMP_MIN)/(TEMP_MAX - TEMP_MIN)

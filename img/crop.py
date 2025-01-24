@@ -81,102 +81,57 @@ def registration(P, x_dash, y_dash):
 
 
 # クリックした特徴点保存する配列
-future_points1 = np.array([[1, 1]])
-future_points2 = np.array([[1, 1]])
+feature_points1 = np.array([[1, 1]])
 count_fp1 = 0
-count_fp2 = 0
 
 
 # クリックで特徴点決める
 def onclick(event):
-    global future_points1
-    global future_points2
+    global feature_points1
     global count_fp1
-    global count_fp2
 
     click_axes = event.inaxes
     x = math.floor(event.xdata)
     y = math.floor(event.ydata)
     if click_axes == ax1:
         if count_fp1 == 0:
-            future_points1[0, :] = (x, y)
+            feature_points1[0, :] = (x, y)
             count_fp1 = 1
         else:
-            future_points1 = np.vstack([future_points1, np.array([x, y])])
+            feature_points1 = np.vstack([feature_points1, np.array([x, y])])
             count_fp1 += count_fp1
-        print(future_points1)
-    if click_axes == ax2:
-        if count_fp2 == 0:
-            future_points2[0, :] = (x, y)
-            count_fp2 = 1
-        else:
-            future_points2 = np.vstack([future_points2, np.array([x, y])])
-            count_fp2 += count_fp2
-        print(future_points2)
+        print(feature_points1)
     click_axes.scatter(x, y)
     fig.canvas.draw_idle()
 
 
-# エンターおすと画像重ね合わせ
-def onEnter(event):
-    if event.key == 'enter' and future_points1.size == future_points2.size and future_points1.size >= 3:
-        # P:変換元の座標行列([[x,y,1],[x,y,1],...]
-        # x_dash:変換先のx座標ベクトル
-        # y_dash:変換先のy座標ベクトル
-        vec_one = np.ones((future_points2.shape[0], 1))
-        P = np.hstack([future_points2, vec_one])
-        x_dash = future_points1[:, 0]
-        y_dash = future_points1[:, 1]
-        affine_matrix = registration(P, x_dash, y_dash)
-
-        #アフィン変換後の画像求める
-        affined_image = affine(image2, affine_matrix, image1.shape)
-        x = np.arange(0, affined_image.shape[1], 1)
-        y = np.arange(0, affined_image.shape[0], 1)
-        X_affined, Y_affined = np.meshgrid(x, y)
-        ax3.pcolormesh(X_affined, Y_affined, affined_image, cmap='gray', shading='auto', alpha=0.2)
-        fig.canvas.draw_idle()
 
 
-# 画像読み込み
-# thermal_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358192_T.jpg"
-# visible_path = r"C:\Users\tnkmo\Downloads\items1\items1\20230807_1313\20230807_131358202_V.jpg"
+img_path = '20241223_203142700_V.jpg'
+img = np.array(Image.open(img_path).convert('L'))
 
-# thermal_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859956_T.jpg"
-# visible_path = r"C:\Users\tnkmo\Downloads\20240112_items2-selected\yolo1\20240112_1418\20240112_141859978_V.jpg"
-
-thermal_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\data\0731\table3\20240802_122623324_T.jpg"
-visible_path = r"C:\Users\tnkmo\OneDrive\デスクトップ\thermal_app\boson\data\0731\table3\20240802_122623324_V.jpg"
-
-
-image1 = np.array(Image.open(thermal_path).convert('L'))
-image2 = np.array(Image.open(visible_path).convert('L'))
-# 画像の最後にbg_colorの色追加
 bg_color = 256
-image2 = np.hstack([image2, bg_color * np.ones((image2.shape[0], 1), int)])
-image2 = np.vstack([image2, bg_color * np.ones((1, image2.shape[1]), int)])
+img = np.hstack([img, bg_color * np.ones((img.shape[0], 1), int)])
+img = np.vstack([img, bg_color * np.ones((1, img.shape[1]), int)])
 
-x_image1 = np.arange(0, image1.shape[1], 1)
-y_image1 = np.arange(0, image1.shape[0], 1)
+x_img = np.arange(0, img.shape[1], 1)
+y_img = np.arange(0, img.shape[0], 1)
 
-X1, Y1 = np.meshgrid(x_image1, y_image1)
-
-x_image2 = np.arange(0, image2.shape[1], 1)
-y_image2 = np.arange(0, image2.shape[0], 1)
-
-X2, Y2 = np.meshgrid(x_image2, y_image2)
+X, Y = np.meshgrid(x_img, y_img)
 
 fig = plt.figure(figsize=(8, 8))
-ax1 = fig.add_subplot(221)
-mesh1 = ax1.pcolormesh(X1, Y1, image1, shading='auto', cmap='gray')
+ax1 = fig.add_subplot()
+mesh1 = ax1.pcolormesh(X, Y, img, shading='auto', cmap='gray')
 ax1.invert_yaxis()
-ax2 = fig.add_subplot(223)
-mesh2 = ax2.pcolormesh(X2, Y2, image2, shading='auto', cmap='gray')
-ax2.invert_yaxis()
-ax3 = fig.add_subplot(222)
-mesh3 = ax3.pcolormesh(X1, Y1, image1, shading='auto', cmap='gray', alpha=0.2)
-ax3.invert_yaxis()
 
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
-cid = fig.canvas.mpl_connect('key_press_event', onEnter)
 plt.show()
+
+
+
+with Image.open(img_path) as img:
+    left_x, left_y = feature_points1[0]
+    right_x, right_y = feature_points1[1]
+    cropped_img = img.crop((left_x, left_y, right_x, right_y))
+    cropped_img.save('cropped_image.jpg')
+    print('image saved')

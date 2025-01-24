@@ -6,6 +6,7 @@ from flirpy.camera.boson import Boson
 import numpy as np
 import datetime as dt
 import argparse
+import time
 
 def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
     h_min = min(im.shape[0] for im in im_list)
@@ -16,12 +17,20 @@ def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
 TEMP_MIN = -60.0
 TEMP_MAX = -40.0
 
+
+datetime = dt.datetime.now()
+date = datetime.date()
+os.makedirs(f'./data/{date}/table2', exist_ok=True)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--mode")
 args = parser.parse_args()
 
 cap_v = cv2.VideoCapture(1)
 cap_t = Boson()
+
+desired_fps = 15  # 任意のFPS値
+interval = 1.0 / desired_fps
 
 
 # python3 .\capture.py --mode calibration
@@ -41,8 +50,8 @@ if args.mode == "calibration":
         cv2.imshow('Boson', mergeImg)
         
         if cv2.waitKey(1) == 27:
-            cv2.imwrite('./data/0731/table3/test_table3_T.jpg', img_t)
-            cv2.imwrite('./data/0731/table3/test_table3_V.jpg', img_v)
+            cv2.imwrite(f'./data/{date}/test_table2_T.jpg', img_t)
+            cv2.imwrite(f'./data/{date}/test_table2_V.jpg', img_v)
             break  # esc to quit
             
     cv2.destroyAllWindows()
@@ -54,9 +63,9 @@ if args.mode == "capture":
         _, img_v = cap_v.read()
         
         now = dt.datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]
-        with open('./data/0731/table3/{}_T.dat'.format(now), 'wb') as f:
+        with open(f'./data/{date}/table2/{now}_T.dat', 'wb') as f:
             f.write(img_t)
-        cv2.imwrite('./data/0731/table3/{}_V.jpg'.format(now), img_v)
+        cv2.imwrite(f'./data/{date}/table2/{now}_V.jpg', img_v)
         
         img_t = img_t.astype(np.uint16).reshape([512, 640])/100 - 273.15
         img_t = 255.0*(img_t - TEMP_MIN)/(TEMP_MAX - TEMP_MIN)
@@ -70,7 +79,8 @@ if args.mode == "capture":
         
         if cv2.waitKey(1) == 27:
             break  # esc to quit
-            
+        
+        time.sleep(interval)
     cv2.destroyAllWindows()
 
 
